@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog BN</title>
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {% load static %}
+    {% load get_datetime %}
+    <link rel="stylesheet" href="{% static 'blog/blog_index.css' %}">
+    <script src="{% static 'blog/js/blog_index.js' %}"></script>
+
+</head>
+<body>
+
+    <svg style="display: none;">
+        <symbol id="search" viewBox="0 0 24 24">
+            <g> <path  d="M 18.4203 15.58 L 24 21.1597 L 21.1597 24 L 15.58 18.4203 C 13.9925 19.4718 12.0888 20.0841 10.0421 20.0841 C 4.49598 20.0841 0 15.5881 0 10.0421 C 0 4.49598 4.49598 0 10.0421 0 C 15.5881 0 20.0841 4.49598 20.0841 10.0421 C 20.0841 12.0888 19.4718 13.9925 18.4203 15.58 Z M 10.0421 16.0673 C 13.3697 16.0673 16.0673 13.3697 16.0673 10.0421 C 16.0673 6.71441 13.3697 4.01682 10.0421 4.01682 C 6.71441 4.01682 4.01682 6.71441 4.01682 10.0421 C 4.01682 13.3697 6.71441 16.0673 10.0421 16.0673 Z"/>
+            </g>
+        </symbol>
+        <symbol id="next" viewBox="0 0 492.004 492.004" >
+            <g>
+                <path d="M382.678,226.804L163.73,7.86C158.666,2.792,151.906,0,144.698,0s-13.968,2.792-19.032,7.86l-16.124,16.12
+                c-10.492,10.504-10.492,27.576,0,38.064L293.398,245.9l-184.06,184.06c-5.064,5.068-7.86,11.824-7.86,19.028
+                c0,7.212,2.796,13.968,7.86,19.04l16.124,16.116c5.068,5.068,11.824,7.86,19.032,7.86s13.968-2.792,19.032-7.86L382.678,265
+                c5.076-5.084,7.864-11.872,7.848-19.088C390.542,238.668,387.754,231.884,382.678,226.804z"/>
+            </g>
+        </symbol>
+    </svg>
+
+
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+
+                <div class="header__logo">
+                    <a class="header__logotype" href="{% url 'blog:index' %}">Blog BN</a>
+                </div>
+
+                <nav class="nav">
+                    <a class="nv--li" href="{% url 'blog:index' %}">Main</a>
+                    <a class="nav__link" href="{% url 'blog:authors' %}">Authors</a>
+                    <a class="nav__link" href="{% url 'blog:tags' %}">Tags</a>
+                    {% if request.user.is_authenticated %}
+                        <a class="nav__link--sign" href="{% url 'blog:my_page' %}">My page</a>
+                    {% else %}
+                        <a class="nav__link--sign" href="{% url 'blog:login' %}">Login</a>
+                        <a class="nav__link--sign" href="{% url 'blog:sign_up' %}">Sign up</a>
+                    {% endif %}
+                    <a class="nav__photo" id="photobtn" href="">
+                        <svg class="nav__photosearch">
+                            <use xlink:href="#search"> </use>
+                        </svg>
+                    </a>
+                </nav>
+                <button class="burger" type="button" id="navToggle" >
+                    <span class="burger__item">Menu</span>
+                </button>
+            </div>
+            <div class="search__item" id="searitem">
+                <div class="search__line">
+                    <form action="{% url 'blog:search' %}" class="box" method="get">
+                        <input type="title" id="title" name="q" placeholder="Search">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+<div class="fixword">
+    <div class="fixword__text">
+        Blog from BN
+    </div>
+</div>
+
+
+<div class="intro" id="intro">
+    <div class="intro__slider" id="introSlider">
+        <div class="slick-item">
+            {% if article1 %}
+                <div class="intro__item">
+                    <div class="intro__photo">
+                        {% if article1.image %}
+                            <img class="intro__img" src="{{ article1.image.url }}" alt="Here should be an image">
+                        {% else %}
+                            <img src="https://placehold.it/250x250" alt="Here should be an image" class="intro__img">
+                        {% endif %}
+                    </div>
+                    <div class="intro__content">
+                        <div class="intro__featured">
+                            <div class="intro__f">
+                               <div class="intro__star">
+                                    <img class="intro__stars" src="{% static 'blog/images/star.svg' %}">
+                                </div>
+                                    <div class="intro__featured--text">featured</div>
+                            </div>
+                        </div>
+                        <div class="intro__title"><a class="intro__title--text" href="{% url 'blog:article' article1.author.name article1.name %}">{{ article1.name }}</a></div>
+                        <div class="intro__author"><span class="intro__author--b">by</span><a class="intro__link" href="{% url 'blog:writer' article1.author.name %}"> {{ article1.author.name }}</a><span class="intro__author--sm"> {% get_datetime article1.pub_date %}</span></div>
+                    </div>
+            </div>
+            {% else %}
+                <p><h2 style="text-align: center;">No articles</h2></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<div class="blogs">
+    <div class="container">
+        <div class="blog">
+
+            {% if groups|length > 0 %}
+                {% for group in groups %}
+
+                    {% if group.0 == 0 %}
+                        <!-- 1 -->
+
+                        <!-- bi11 -->
+                        <div class="blogs__item1 bi11">
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}">
+                                    {% if group.1.0.image %}
+                                        <img src="{{ group.1.0.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}
+                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}"><h2 class="blogs__text">{{ group.1.0.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.0.author.name %}">{{ group.1.0.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.0.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.0.tag.name %}">{{ group.1.0.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+
+                    {% endif %}
+
+                    {% if group.0 == 1 %}
+                    <!-- 12 -->
+
+                        <!-- bi11 -->
+                        <div class="blogs__item1 bi11">
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}">
+                                    {% if group.1.0.image %}
+                                        <img src="{{ group.1.0.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}"><h2 class="blogs__text">{{ group.1.0.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.0.author.name %}">{{ group.1.0.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.0.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.0.tag.name %}">{{ group.1.0.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+
+                        <!-- bi21 -->
+                        <div class="blogs__item2 bi21">
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.1.author.name group.1.1.name %}">
+                                    {% if group.1.1.image %}
+                                        <img src="{{ group.1.1.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.1.author.name group.1.1.name %}"><h2 class="blogs__text">{{ group.1.1.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.1.author.name %}">{{ group.1.1.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.1.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.1.tag.name %}">{{ group.1.1.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+                    {% endif %}
+
+                    {% if group.0 == 2 %}
+                    <!-- 21 -->
+                        <div class="blogs__item2 bi22">
+                            <!-- bi22 -->
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}">
+                                    {% if group.1.0.image %}
+                                        <img src="{{ group.1.0.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}"><h2 class="blogs__text">{{ group.1.0.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.0.author.name %}">{{ group.1.0.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.0.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.0.tag.name %}">{{ group.1.0.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+                        <div class="blogs__item1 bi15">
+                            <!-- bi15 -->
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.1.author.name group.1.1.name %}">
+                                    {% if group.1.1.image %}
+                                        <img src="{{ group.1.1.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.1.author.name group.1.1.name %}"><h2 class="blogs__text">{{ group.1.1.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.1.author.name %}">{{ group.1.1.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.1.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.1.tag.name %}">{{ group.1.1.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+                    {% endif %}
+
+                    {% if group.0 == 3 %}
+                    <!-- 1.5 1.5 -->
+                        <div class="blogs__item4 bi41">
+                            <!-- bi41 -->
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}">
+                                    {% if group.1.0.image %}
+                                        <img src="{{ group.1.0.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}"><h2 class="blogs__text">{{ group.1.0.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.0.author.name %}">{{ group.1.0.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.0.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.0.tag.name %}">{{ group.1.0.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+                        <div class="blogs__item4 bi42">
+                            <!-- bi42 -->
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.1.author.name group.1.1.name %}">
+                                    {% if group.1.1.image %}
+                                        <img src="{{ group.1.1.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.1.author.name group.1.1.name %}"><h2 class="blogs__text">{{ group.1.1.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.1.author.name %}">{{ group.1.1.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.1.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.1.tag.name %}">{{ group.1.1.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+                    {% endif %}
+
+                    {% if group.0 == 4 %}
+                    <!-- 111 low -->
+                        <div class="blogs__item1 bi12">
+                            <!-- bi12 -->
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}">
+                                    {% if group.1.0.image %}
+                                        <img src="{{ group.1.0.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.0.author.name group.1.0.name %}"><h2 class="blogs__text">{{ group.1.0.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.0.author.name %}">{{ group.1.0.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.0.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.0.tag.name %}">{{ group.1.0.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+                        <div class="blogs__item1 bi13">
+                            <!-- bi13 -->
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.1.author.name group.1.1.name %}">
+                                    {% if group.1.1.image %}
+                                        <img src="{{ group.1.1.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.1.author.name group.1.1.name %}"><h2 class="blogs__text">{{ group.1.1.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.1.author.name %}">{{ group.1.1.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.1.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.1.tag.name %}">{{ group.1.1.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+                        <div class="blogs__item1 bi14">
+                            <!-- bi14 -->
+                            <article>
+                                <a class="blogs__fon"  href="{% url 'blog:article' group.1.2.author.name group.1.2.name %}">
+                                    {% if group.1.2.image %}
+                                        <img src="{{ group.1.2.image.url }}" class="blogs__img" alt="Here should be an image">
+                                    {% else %}
+                                        <img src="https://placehold.it/250x250" alt="Here should be an image" class="blogs__img">
+                                    {% endif %}                                    <div class="blogs__content">
+                                        <a class="blogs__texting" href="{% url 'blog:article' group.1.2.author.name group.1.2.name %}"><h2 class="blogs__text">{{ group.1.2.name }}</h2></a>
+                                        <div class="blogs__auth">
+                                            <span class="blogs__s">by </span>
+                                            <a class="blogs__author" href="{% url 'blog:writer' group.1.2.author.name %}">{{ group.1.2.author.name }}</a>
+                                            <span class="blogs__s"> {% get_datetime group.1.2.pub_date %}</span>
+                                        </div>
+                                        <div class="blogs__btn">
+                                            <a class="blogs__btn--btn" href="{% url 'blog:tag' group.1.2.tag.name %}">{{ group.1.2.tag.name }}</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer__footer">
+            <div class="footer__col">
+                <div class="footer__logo">
+                    <a class="header__logotype" href="{% url 'blog:index' %}">Blog BN</a>
+                </div>
+            </div>
+            <div class="footer__col fc2">
+                <a class="nv--li" href="{% url 'blog:index' %}">Main</a>
+                <a class="nav__link" href="{% url 'blog:authors' %}">Authors</a>
+                <a class="nav__link" href="{% url 'blog:tags' %}">Tags</a>
+            </div>
+        </div>
+        <div class="copyright">
+            <div class="copy__text">
+                ©  2020 B&K. All Rights Reserved
+            </div>
+            <div class="copyright__author">
+                <span class="copy__text">Made by</span>  Bogdankov Nikita <span class="copy__text"> and </span> Grigory Novikov
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!--JavaScript-->
+<script src="{% static 'blog/js/blog_index.js' %}"></script>
+
+</body>
+</html>

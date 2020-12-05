@@ -1,0 +1,10 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# virtualenv
+venv/
+
+# django migrations
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
