@@ -8,3 +8,7 @@ venv/
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+
+# media/
+# !media/test/images/test*.jpg
+# !media/writers/images/default.jpg
