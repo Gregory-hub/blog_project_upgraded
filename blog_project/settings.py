@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from logging import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = '1-stns$a3^s2_(rwyciu=9*+r@@0ysr@r^dlw&-uvs8-!*o3e$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -127,3 +128,32 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+
+config_dict = {
+    'version': 1,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'simple': {
+            'class': 'logging.FileHandler',
+            'filename': 'loggerfile.log',
+            'level': 'WARNING',
+            'formatter': 'simple'
+        }
+    },
+    'loggers': {
+        'blog_logger': {
+            'level': 'WARNING',
+            'handlers': {
+                'simple'
+            }
+        }
+    }
+}
+
+config.dictConfig(config_dict)

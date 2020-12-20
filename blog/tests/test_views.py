@@ -17,8 +17,8 @@ from blog.forms import *
 def create_writer(name, age, image=None, bio=None):
 
     writer = Writer.objects.create(
-        name = name,
-        age = age,
+        name=name,
+        age=age,
     )
     if image:
         writer.image = image
@@ -31,12 +31,12 @@ def create_writer(name, age, image=None, bio=None):
 
 def create_article(writer, name, text, image=None, tag=None):
     article = writer.article_set.create(
-        name = name,
-        text = text,
-        image = image,
-        tag = tag,
-        pub_date = timezone.now(),
-        last_edit = timezone.now()
+        name=name,
+        text=text,
+        image=image,
+        tag=tag,
+        pub_date=timezone.now(),
+        last_edit=timezone.now()
     )
     return article
 
@@ -127,7 +127,6 @@ class ArticleViewTestCase(TestCase):
         username = 'commentator'
         password = 'commentator'
 
-        commentator = create_user(username, password)
         create_writer(username, 93)
         self.client.login(username=username, password=password)
 
@@ -228,10 +227,10 @@ class MyPageViewTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Article.objects.get(
-            author = self.writer,
-            name = name,
-            text = text,
-            tag = tag,
+            author=self.writer,
+            name=name,
+            text=text,
+            tag=tag,
         ).image.path.startswith(os.path.join(settings.MEDIA_ROOT, 'articles/images/test_writer_test_article')))
 
     def test_post_bio_form(self):
@@ -339,10 +338,10 @@ class EditViewTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Article.objects.get(
-            author = self.writer,
-            name = new_name,
-            text = new_text,
-            tag = new_tag,
+            author=self.writer,
+            name=new_name,
+            text=new_text,
+            tag=new_tag,
         ).image.path.startswith(os.path.join(settings.MEDIA_ROOT, r'articles/images/test_writer_test_article_new')))
 
     def test_post_edits_article_with_image(self):
@@ -353,7 +352,7 @@ class EditViewTests(TestCase):
             new_image = SimpleUploadedFile('test1.jpg', image.read(), content_type='image/jpeg')
 
         response = self.client.post(
-            reverse('blog:edit', args=(self.article.name, )),{
+            reverse('blog:edit', args=(self.article.name, )), {
                 'name': new_name,
                 'text': new_text,
                 'tag': new_tag,
@@ -362,10 +361,10 @@ class EditViewTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Article.objects.get(
-            author = self.writer,
-            name = new_name,
-            text = new_text,
-            tag = new_tag,
+            author=self.writer,
+            name=new_name,
+            text=new_text,
+            tag=new_tag,
         ).image.path.startswith(os.path.join(settings.MEDIA_ROOT, r'articles/images/test_writer_test_article_new')))
 
 
@@ -422,8 +421,8 @@ class LogInViewTests(TestCase):
         password = 'password'
 
         user = User.objects.create_user(
-            username = name,
-            password = password
+            username=name,
+            password=password
         )
 
         response = self.client.post(reverse('blog:login'), {'username': name, 'password': password})
@@ -478,14 +477,14 @@ class LogOutViewTests(TestCase):
         password = 'password'
 
         User.objects.create_user(
-            username = name,
-            password = password
+            username=name,
+            password=password
         )
 
         user = get_user(self.client)
         self.assertFalse(user.is_authenticated)
 
-        self.client.login(username = name, password = password)
+        self.client.login(username=name, password=password)
 
         user = get_user(self.client)
         self.assertTrue(user.is_authenticated)
@@ -582,3 +581,22 @@ class TagViewTestCase(TestCase):
 
             response = self.client.get(reverse('blog:tag', args=(self.tag.name, )))
             self.assertEqual(response.status_code, 200)
+
+
+class ReportViewTestCase(TestCase):
+    def setUp(self):
+        create_user('reporter', 'password')
+        self.reporter = create_writer('reporter', 12)
+        self.author = create_writer('author', 11)
+        self.article = create_article(self.author, 'article', 'text')
+
+    def test_response_status_if_unauthenticated(self):
+        response = self.client.get(reverse('blog:report', args=(self.author.name, self.article.name)))
+        self.assertIs(response.status_code, 200)
+
+    def test_response_status_if_authenticated(self):
+        self.client.login(username='reporter', password='password')
+        response = self.client.get(reverse('blog:report', args=(self.author.name, self.article.name)))
+        self.assertIs(response.status_code, 200)
+
+    def test_json_response(self):

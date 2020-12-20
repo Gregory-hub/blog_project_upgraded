@@ -75,3 +75,8 @@ class Tag(Model):
 
     def __str__(self):
         return self.name
+
+
+class Report(Model):
+    reporter = ForeignKey('Writer', on_delete=CASCADE)
+    article = ForeignKey('Article', on_delete=CASCADE)

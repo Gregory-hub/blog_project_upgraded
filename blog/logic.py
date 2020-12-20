@@ -8,12 +8,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.conf import settings
 from django.utils import timezone
 
-from .models import Article, Writer, Tag
+from .models import Article, Writer, Tag, Report
 from . import forms
 
 
@@ -716,3 +716,40 @@ class SearchView(BaseView):
         if len(result) == 0:
             return None
         return result
+
+
+class Report_View(BaseView):
+    def __init__(self, request: WSGIRequest):
+        self.request = request
+
+    def report(self, author_name: str, article_name: str):
+        if not self.user_is_valid():
+            return JsonResponse({'ok': False, 'message': 'Not authenticated'})
+
+        reporter = self.get_reporter()
+        article = self.get_article(author_name, article_name)
+
+        if not self.report_exists(reporter, article):
+            return JsonResponse({'ok': False, 'message': 'Report already exists'})
+
+        self.create_report(reporter, article)
+        return JsonResponse({'ok': True, 'message': ''})
+
+    def get_article(self, author_name: str, article_name: str):
+        author = get_object_or_404(Writer, name=author_name)
+        article = get_object_or_404(Article, author=author, name=article_name)
+        return article
+
+    def get_reporter(self):
+        reporter_name = self.request.user.username
+        reporter = get_object_or_404(Writer, name=reporter_name)
+        return reporter
+
+    def report_exists(self, reporter: Writer, article: Article):
+        return Report.objects.filter(reporter=reporter, article=article).exists()
+
+    def create_report(self, reporter: Writer, article: Article):
+        Report.objects.create(
+            reporter=reporter,
+            article=article
+        )
