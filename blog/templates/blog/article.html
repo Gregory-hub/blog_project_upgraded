@@ -78,7 +78,7 @@
                     <div class="intro__author">
                         <span class="intro__s" >
                             {% get_datetime article.pub_date %}
-                            {% if article.pub_date != article.last_edit %}
+                            {% if last_edit != pub_date %}
                                 (Edited {% get_datetime article.last_edit %})
                             {% endif %}
                         </span>

@@ -592,11 +592,28 @@ class ReportViewTestCase(TestCase):
 
     def test_response_status_if_unauthenticated(self):
         response = self.client.get(reverse('blog:report', args=(self.author.name, self.article.name)))
-        self.assertIs(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_response_status_if_authenticated(self):
         self.client.login(username='reporter', password='password')
         response = self.client.get(reverse('blog:report', args=(self.author.name, self.article.name)))
-        self.assertIs(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
-    def test_json_response(self):
+    def test_json_response_if_not_authenticated(self):
+        response = self.client.get(reverse('blog:report', args=(self.author.name, self.article.name)))
+        self.assertEqual(response.json()['ok'], False)
+        self.assertEqual(response.json()['message'], 'Not authenticated')
+
+    def test_json_response_if_authenticated(self):
+        self.client.login(username='reporter', password='password')
+        response = self.client.get(reverse('blog:report', args=(self.author.name, self.article.name)))
+        print(response.json()['message'])
+        self.assertEqual(response.json()['ok'], True)
+        self.assertEqual(response.json()['message'], '')
+
+    def test_json_response_if_reported_twice(self):
+        self.client.login(username='reporter', password='password')
+        response = self.client.get(reverse('blog:report', args=(self.author.name, self.article.name)))
+        response = self.client.get(reverse('blog:report', args=(self.author.name, self.article.name)))
+        self.assertEqual(response.json()['ok'], False)
+        self.assertEqual(response.json()['message'], 'You have already reported this article')
