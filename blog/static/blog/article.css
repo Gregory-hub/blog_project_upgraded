@@ -209,9 +209,12 @@ h1,h2,h3,h4,h5,h6{
 .intro{
     margin-top: 170px;
     background:  linear-gradient(to right, #e77842, #f7c068) ;
+    max-height: 400px;
 
 }
-
+.intro__flex{
+    display: flex;
+}
 .intro__btn{
     margin-bottom: 30px;
     padding-top: 50px;
@@ -233,6 +236,27 @@ h1,h2,h3,h4,h5,h6{
 .intro__btn--text:hover{
     background-color:#e7a007;
 
+}
+
+.photo__error{
+    height: 25px;
+    width: 25px;
+    fill:#717171;
+    top: 0px;
+    margin-bottom: -35px;
+    transition: .3s;
+}
+.error{
+    padding-top: 25px;
+    margin-left: 550px;
+    width: 50px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    left: 0;
+}
+
+.nav__photo:hover .photo__error{
+    fill:white;
 }
 
 .intro__auth{
