@@ -163,7 +163,10 @@
                         </div>
                     {% endif %}
 
-                    {{ message }}
+                    {% if message %}
+                        {{ message }}
+                    {% endif %}
+
                     {% if form %}
                         <form class="boxl" action="{% url 'blog:article' article.author.name article.name %}" method="post">
                             {% csrf_token %}

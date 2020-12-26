@@ -42,7 +42,9 @@
             <div class="contact__title--text">Sign up</div>
         </div>
         <div class="show">
-            <div class="show__word">{{ message }}</div>
+            {% if message %}
+                <div class="show__word">{{ message }}</div>
+            {% endif %}
         </div>
 
         <form class="box" action="{% url 'blog:sign_up' %}" method="post">
