@@ -1,6 +1,7 @@
 import functools
 import logging
 
+from django.conf import settings
 from django.http import Http404
 from django.http import HttpResponse
 
@@ -15,6 +16,9 @@ def raise_blog_error():
 def base_view(fun):
     @functools.wraps(fun)
     def inner(*args, **kwargs):
+        if settings.DEBUG is True:
+            return fun(*args, **kwargs)
+
         try:
             return fun(*args, **kwargs)
         except Http404:
