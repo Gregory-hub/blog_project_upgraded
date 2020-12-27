@@ -13,3 +13,6 @@ venv/
 media/
 !media/test/images/test*.jpg
 !media/writers/images/default.jpg
+
+*.log
+*.sqlite3

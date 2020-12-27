@@ -28,3 +28,7 @@ ERROR 2020-12-17 13:29:58 in blog.views.index: 500 server error
 ERROR 2020-12-17 13:33:07 in blog.views.writer: 500 server error
 ERROR 2020-12-20 04:40:16 in blog.views.article: 500 server error
 ERROR 2020-12-20 04:40:25 in blog.views.writer: 500 server error
+ERROR 2020-12-26 14:45:47 in blog.views.my_page: 500 server error
+ERROR 2020-12-27 05:18:15 in blog.views.my_page: 500 server error
+ERROR 2020-12-27 05:18:21 in blog.views.index: 500 server error
+ERROR 2020-12-27 05:18:24 in blog.views.index: 500 server error
