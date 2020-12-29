@@ -78,7 +78,9 @@
         <div class="writer__inner">
             <div class="writer__title">Edit '{{ article.name }}'</div>
 
-            {{ message }}
+            {% if message %}
+                {{ message }}
+            {% endif %}
 
             <form  class="boxl" action="{% url 'blog:edit' article.name %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}

@@ -1,5 +1,7 @@
 import os
 import random
+import datetime
+from math import floor
 from fuzzysearch import find_near_matches
 
 from django.db.models.query import QuerySet
@@ -45,7 +47,7 @@ class IndexView(BaseView):
         }
 
     def get_article1_and_groups(self):
-        articles = Article.objects.order_by('-pub_date')
+        articles = Article.objects.order_by('-last_edit')
 
         if len(articles) > 1:
             article1, groups = self.get_article1_and_groups_if_many_articles(articles)
@@ -92,7 +94,7 @@ class IndexView(BaseView):
         elif len(articles) <= 30:
             articles = articles.annotate(num_comments=Count('comment')).order_by('-num_comments')
         else:
-            articles = articles.order_by('-pub_date')[random.randint(20, 30)]
+            articles = articles.order_by('-last_edit')[random.randint(20, 30)]
             articles.annotate(num_comments=Count('comment')).order_by('-num_comments')
         return list(articles)
 
@@ -147,8 +149,17 @@ class ArticleView(BaseView):
         comments = article.comment_set.order_by('-comment_date')
         message = self.get_message()
 
+        pub_date = article.pub_date - datetime.datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
+        pub_date = floor(pub_date.total_seconds())
+        print(pub_date)
+        last_edit = article.last_edit - datetime.datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
+        last_edit = floor(last_edit.total_seconds())
+        print(last_edit)
+
         self.context = {
             'article': article,
+            'pub_date': pub_date,
+            'last_edit': last_edit,
             'form': form,
             'recommended_article': recommended_article,
             'comments': comments,
@@ -729,8 +740,8 @@ class Report_View(BaseView):
         reporter = self.get_reporter()
         article = self.get_article(author_name, article_name)
 
-        if not self.report_exists(reporter, article):
-            return JsonResponse({'ok': False, 'message': 'Report already exists'})
+        if self.report_exists(reporter, article):
+            return JsonResponse({'ok': False, 'message': 'You have already reported this article'})
 
         self.create_report(reporter, article)
         return JsonResponse({'ok': True, 'message': ''})
