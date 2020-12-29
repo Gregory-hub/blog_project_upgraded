@@ -159,6 +159,23 @@
         <div class="container">
             <div class="review">
                 <div class="container2">
+
+                    {% if message %}
+                        {{ message }}
+                    {% endif %}
+
+                    {% if form %}
+                        <form class="boxl" action="{% url 'blog:article' article.author.name article.name %}" method="post">
+                            {% csrf_token %}
+                            <div class="comment">
+                                <div class="comment__text">
+                                    {{ form.text }}
+                                </div>
+                                <input type="submit" name="comment_form" value="Submit">
+                            </div>
+                        </form>
+                    {% endif %}
+
                     {% if comments %}
                         <div class="comment__title">Comments</div>
                         <div class="comments">
@@ -178,21 +195,6 @@
                         </div>
                     {% endif %}
 
-                    {% if message %}
-                        {{ message }}
-                    {% endif %}
-
-                    {% if form %}
-                        <form class="boxl" action="{% url 'blog:article' article.author.name article.name %}" method="post">
-                            {% csrf_token %}
-                            <div class="comment">
-                                <div class="comment__text">
-                                    {{ form.text }}
-                                </div>
-                                <input type="submit" name="comment_form" value="Submit">
-                            </div>
-                        </form>
-                    {% endif %}
 
                 </div>
             </div>
