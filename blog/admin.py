@@ -4,10 +4,14 @@ from .models import Article, Writer, Tag, Comment
 
 
 class ArticleAdmin(admin.ModelAdmin):
+
+    def reports_number(self, obj: Article):
+        return obj.report_set.count()
+
     ordering = ['-pub_date']
     date_hierarchy = 'pub_date'
     list_filter = ['tag', 'pub_date', 'last_edit', ('author', admin.RelatedOnlyFieldListFilter)]
-    readonly_fields = ['author', 'pub_date', 'last_edit']
+    readonly_fields = ['author', 'pub_date', 'last_edit', 'reports_number']
     search_fields = ['name', 'author__name', 'tag__name']
 
 

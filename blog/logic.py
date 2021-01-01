@@ -151,10 +151,8 @@ class ArticleView(BaseView):
 
         pub_date = article.pub_date - datetime.datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
         pub_date = floor(pub_date.total_seconds())
-        print(pub_date)
         last_edit = article.last_edit - datetime.datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
         last_edit = floor(last_edit.total_seconds())
-        print(last_edit)
 
         self.context = {
             'article': article,
@@ -403,7 +401,15 @@ class MyArticleView(BaseView):
     def set_context(self, article_name: str):
         writer = get_object_or_404(Writer, name=self.request.user.username)
         article = writer.article_set.get(name=article_name)
+
+        pub_date = article.pub_date - datetime.datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
+        pub_date = floor(pub_date.total_seconds())
+        last_edit = article.last_edit - datetime.datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
+        last_edit = floor(last_edit.total_seconds())
+
         self.context = {
+            'pub_date': pub_date,
+            'last_edit': last_edit,
             'article': article,
             'comments': article.comment_set.order_by('-comment_date'),
         }
@@ -735,16 +741,16 @@ class Report_View(BaseView):
 
     def report(self, author_name: str, article_name: str):
         if not self.user_is_valid():
-            return JsonResponse({'ok': False, 'message': 'Not authenticated'})
+            return JsonResponse({'message': 'Not authenticated'})
 
         reporter = self.get_reporter()
         article = self.get_article(author_name, article_name)
 
         if self.report_exists(reporter, article):
-            return JsonResponse({'ok': False, 'message': 'You have already reported this article'})
+            return JsonResponse({'message': 'You have already reported this article'})
 
         self.create_report(reporter, article)
-        return JsonResponse({'ok': True, 'message': ''})
+        return JsonResponse({'message': 'Report was created successfully'})
 
     def get_article(self, author_name: str, article_name: str):
         author = get_object_or_404(Writer, name=author_name)
