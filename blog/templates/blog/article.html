@@ -9,7 +9,6 @@
     {% load static %}
     {% load get_datetime %}
     <link rel="stylesheet" href="{% static 'blog/article.css' %}">
-    <script src="{% static 'blog/js/article.js' %}"></script>
 </head>
 <body>
 
@@ -74,7 +73,6 @@
         </div>
     </header>
 
-
     <div class="intro">
         <div class="intro__inner">
             <div class="container2">
@@ -82,22 +80,24 @@
                     <div class="intro__btn">
                         <a href="{% url 'blog:tag' article.tag.name %}" class="intro__btn--text">{{ article.tag.name }}</a>
                     </div>
-                    <div class="nav__photo error" href="#">
+                    <div class="nav__photo error" id="report">
                         <svg class="photo__error">
                             <use xlink:href="#error"> </use>
                         </svg>
                     </div>
+                    <div class="message"></div>
                 </div>
                 <div class="intro__title">{{ article.name }}</div>
                 <div class="intro__subtitle">
-                    <div class="intro__author">
-                        <span class="intro__s" >
-                            {% get_datetime article.pub_date %}
-                            {% if last_edit != pub_date %}
-                                (Edited {% get_datetime article.last_edit %})
-                            {% endif %}
-                        </span>
-                    </div>
+                <div class="intro__author">
+                    <span class="intro__s">by </span><a class="intro__auth" href="{% url 'blog:writer' article.author.name %}">{{ article.author.name }}</a>
+                    <span class="intro__s">
+                        {% get_datetime article.pub_date %}
+                        {% if last_edit != pub_date %}
+                            (Edited {% get_datetime article.last_edit %})
+                        {% endif %}
+                    </span>
+                </div>
                 </div>
             </div>
         </div>
