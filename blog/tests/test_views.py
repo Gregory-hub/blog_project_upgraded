@@ -127,7 +127,8 @@ class ArticleViewTestCase(TestCase):
         username = 'commentator'
         password = 'commentator'
 
-        create_writer(username, 93)
+        commentator = create_writer(username, 93)
+        create_user(username, password)
         self.client.login(username=username, password=password)
 
         text = 'test comment text'
@@ -136,7 +137,7 @@ class ArticleViewTestCase(TestCase):
             {'text': text},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(Comment.objects.filter(article=self.article, text=text).exists())
+        self.assertTrue(self.article.comment_set.filter(author=commentator, text=text).exists())
 
 
 class WriterViewTests(TestCase):

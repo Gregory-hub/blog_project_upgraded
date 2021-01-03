@@ -151,10 +151,8 @@ class ArticleView(BaseView):
 
         pub_date = article.pub_date - datetime.datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
         pub_date = floor(pub_date.total_seconds())
-        print(pub_date)
         last_edit = article.last_edit - datetime.datetime(2000, 1, 1, tzinfo=timezone.now().tzinfo)
         last_edit = floor(last_edit.total_seconds())
-        print(last_edit)
 
         self.context = {
             'article': article,
