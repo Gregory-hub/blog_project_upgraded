@@ -13,8 +13,8 @@ from blog.models import Writer, Tag
 
 def create_writer(name, age, image=None, bio=None):
     writer = Writer.objects.create(
-        name = name,
-        age = age,
+        name=name,
+        age=age,
     )
     if image:
         writer.image = image
@@ -26,12 +26,12 @@ def create_writer(name, age, image=None, bio=None):
 
 def create_article(writer, name, text, image=None, tag=None):
     article = writer.article_set.create(
-        name = name,
-        text = text,
-        image = image,
-        tag = tag,
-        pub_date = timezone.now(),
-        last_edit = timezone.now()
+        name=name,
+        text=text,
+        image=image,
+        tag=tag,
+        pub_date=timezone.now(),
+        last_edit=timezone.now()
     )
     return article
 
@@ -92,7 +92,6 @@ class WriterModelTestCase(TestCase):
         with open(settings.MEDIA_ROOT + r'/test/images/test1.jpg', 'rb') as file:
             image = SimpleUploadedFile('test_writer_image.jpg', file.read(), content_type='image/jpg')
         self.writer.upload_image(image)
-
 
     def tearDown(self):
 
