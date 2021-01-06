@@ -26,7 +26,7 @@ class Article(Model):
         filename = os.path.join('articles/images/', filename)
 
         model_logic.upload_to_storage(file, filename)
-        model_logic.resize_image(filename, square=True)
+        model_logic.resize_image(filename, square=False)
         self.image = filename
         self.save()
 
